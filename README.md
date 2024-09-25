@@ -29,7 +29,7 @@ Before you begin, ensure you have the following software installed on your local
 To get a copy of the project locally, use Git:
 
 ```bash
-git clone https://github.com/your-repository-url.git
+git clone https://github.com/CSYE6225-Networks-and-Cloud-Computing/webapp.git
 ```
 
 Navigate to the project directory:
@@ -91,7 +91,7 @@ The application should now be running on `http://localhost:4000` (or the port sp
 To check the health of the application:
 
 ```bash
-curl http://localhost:4000/healthz
+curl http://localhost:3000/healthz
 ```
 
 This will return `200 OK` if the application is connected to the database or `503 Service Unavailable` if the database is not reachable.
@@ -100,7 +100,7 @@ This will return `200 OK` if the application is connected to the database or `50
 
 ### Building the Application
 
-No additional build steps are required for this Node.js application. The project is set up to run directly using `npm` or `yarn`. However, ensure that all dependencies are installed by running:
+No additional build steps are required for this Node.js application. The project is set up to run directly using `npm`. However, ensure that all dependencies are installed by running:
 
 ```bash
 npm install
@@ -139,5 +139,5 @@ npm install
 
 ### Authors
 
-- Your Name (your.email@example.com)
+- Hir Sanat Desai (desai.hir@northeastern.edu)
 
