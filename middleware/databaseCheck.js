@@ -5,18 +5,18 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, pr
   dialect: 'postgres'
 });
 
-// Middleware to check the database connection
+// checking the database connection
 const checkDatabaseConnection = async (req, res, next) => {
     try {
-        // Try to authenticate with the database
+        
         await sequelize.authenticate();
         
-        // If the database connection is successful, call next() to proceed for routes
+        // once the database connection is successful, we proceed to the next routes
         next();
     } catch (error) {
         console.error("Database connection error:", error);
 
-        // Return a 503 error if the database is unavailable
+        // else we return 503 error if the database server is off
         return res.status(503).json({
             status: 'fail',
             message: 'Service unavailable: Database connection issue',

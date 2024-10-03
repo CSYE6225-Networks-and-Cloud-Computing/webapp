@@ -12,7 +12,6 @@ const basicAuth = (req, res, next) => {
         });
     }
 
-
     // decoding Base64 encoded username and password
     const base64Credentials = authHeader.split(' ')[1];
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
@@ -50,7 +49,7 @@ const basicAuth = (req, res, next) => {
 const signup = async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword } = req.body;
 
-    // Validate required fields
+    // validating required fields
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
         return res.status(400).json({
             status: 'fail',
@@ -58,14 +57,14 @@ const signup = async (req, res) => {
         });
     }
 
-    // Validate if password and confirmPassword match
+    // validating if password and confirmPassword match
     if (password !== confirmPassword) {
         return res.status(400).json({
             status: 'fail',
             message: 'Password and confirm password must match',
         });
     }
-
+    // validating if first name and last name fields are only alphabets
     const nameValidation = /^[A-Za-z]+$/;
     if (!nameValidation.test(firstName)) {
         return res.status(400).json({
@@ -80,6 +79,7 @@ const signup = async (req, res) => {
         });
     }
 
+    // validating if email entered is in the correct format
     const emailValidation = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailValidation.test(email)) {
         return res.status(400).json({
@@ -89,7 +89,7 @@ const signup = async (req, res) => {
     }
 
     try {
-        // Check if the email already exists
+        // checking if the email already exists
         const isOldUser = await user.findOne({ where: { email } });
         if (isOldUser) {
             return res.status(400).json({
@@ -98,15 +98,15 @@ const signup = async (req, res) => {
             });
         }
 
-        // Hash the password before storing
+        // hashing the password before storing
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create new user with the hashed password
+        // creating a new user with the hashed password and all the details
         const newUser = await user.create({
             firstName,
             lastName,
             email,
-            password: hashedPassword  // Save the hashed password
+            password: hashedPassword  // saving the hashed password
         });
 
         const result = newUser.toJSON();
@@ -133,7 +133,7 @@ const signup = async (req, res) => {
 const updateUser = async (req, res) => {
     const { email, firstName, lastName, password } = req.body;
 
-    // Validate required fields
+    // validating required fields
     if (!email) {
         return res.status(400).json({
             status: 'fail',
@@ -141,6 +141,7 @@ const updateUser = async (req, res) => {
         });
     }
 
+    // validating that the new first name and last name fields (if entered) are in correct format
     const nameValidation = /^[A-Za-z]+$/;
     if (!nameValidation.test(firstName)) {
         return res.status(400).json({
@@ -156,7 +157,7 @@ const updateUser = async (req, res) => {
     }
 
     try {
-        // Find the user by email
+        // finding the user by email
         const foundUser = await user.findOne({ where: { email } });
 
         if (!foundUser) {
@@ -166,16 +167,16 @@ const updateUser = async (req, res) => {
             });
         }
 
-        // Only allow updating specific fields
+        // only allow updating specific fields
         const updates = {};
         if (firstName) updates.firstName = firstName;
         if (lastName) updates.lastName = lastName;
         if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10); // Hash the new password
+            const hashedPassword = await bcrypt.hash(password, 10); // hashing the new password
             updates.password = hashedPassword;
         }
 
-        // Update the user and set the account_updated field to the current date
+        // updating the user and setting the account_updated field to the current date
         await foundUser.update({
             ...updates,
             account_updated: new Date(),
