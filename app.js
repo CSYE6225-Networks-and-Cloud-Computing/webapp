@@ -1,74 +1,66 @@
-require('dotenv').config({path: `${process.cwd()}/.env` });
+require('dotenv').config({ path: `${process.cwd()}/.env` });
 const express = require('express');
+const authRouter = require('./route/authRoute');
 const { Sequelize } = require('sequelize');
+const { checkDatabaseConnection, healthCheck } = require('./middleware/databaseCheck');  // Import middleware
+const setHeaders = require('./middleware/setHeaders');
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
 
-// establishing connection to Postgres
+// Establishing connection to Postgres
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   dialect: 'postgres'
 });
 
-app.use(express.json({ limit: '1kb' }));
+// Apply the database connection check middleware only to /v1/user routes
+app.use('/v1/user', checkDatabaseConnection, authRouter);  // Will call next() if DB is connected
 
-// Health check route
-app.get('/healthz', async (req, res) => {
+// Start the server after syncing the database
+sequelize.sync({ alter: true })
+  .then(() => {
+    console.log("Database & tables synced!");
 
-    // checking if there is any body or query being passed
-    if (Object.keys(req.body).length|| Object.keys(req.query).length != 0) {
+    const PORT = process.env.APP_PORT;
+    app.listen(PORT, () => {
+      console.log('Server up and running on port', PORT);
+    });
+  })
+  .catch((error) => {
+    console.error("Error syncing database or starting server: ", error);
+  });
 
-        // setting headers
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('X-Content-Type-Options', 'nosniff');
 
-        // 400 Bad Request
-        return res.status(400).send();
+// --- Health check route ---
+
+// HEAD requests
+app.head('/healthz', setHeaders, (req, res) => {
+  // Return 405 Method Not Allowed for HEAD
+  return res.status(405).send();
+});
+
+app.get('/healthz', setHeaders, (req, res) => {
+
+  if (Object.keys(req.query).length > 0 || req._body || Object.keys(req.body).length > 0 || req.headers['authorization'] || req.get('Content-Length') !== undefined) {
+    return res.status(400).send(); // Return 400 Bad Request
   }
+  
+  return healthCheck(req, res);
+});
 
-    try {
-      await sequelize.authenticate();
-      
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-      // if the connection is successful, we return 200
-      return res.status(200).send();
-    } catch (error) {
-      
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-      // 503 Service Unavilable
-      return res.status(503).send();
-    }
-  });
-  
-  // no other methods should be allowed other than GET
-  app.all('/healthz', (req, res) => {
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-    // 405 Method Not Allowed
-    return res.status(405).send();
-  });
+// Catch-all for unsupported methods on /healthz to return 405
+app.all('/healthz', setHeaders, (req, res) => {
+  return res.status(405).send();
+});
 
-  // no other routes are to be run and accepted
-  app.get('*', (req, res) => {
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-    // 404 Not Found
-    return res.status(404).send();
-  });
-  
-  const PORT = process.env.APP_PORT;
-  app.listen(PORT, () => {
-    console.log('Server up and running on port', PORT);
-  });
+// no other routes are to be run and accepted
+app.get('*', setHeaders, (req, res) => {
+  // 404 Not Found
+  return res.status(404).send();
+});
+  // ---  end of /healthz  ---
+
+  module.exports = app;
