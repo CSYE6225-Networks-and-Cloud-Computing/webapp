@@ -9,18 +9,18 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
-// Establishing connection to Postgres
+// connecting to Postgres
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   dialect: 'postgres'
 });
 
-// Apply the database connection check middleware only to /v1/user routes
-app.use('/v1/user', checkDatabaseConnection, authRouter);  // Will call next() if DB is connected
+// checking database connection and then onto next routes
+app.use('/v1/user', checkDatabaseConnection, authRouter); 
 
-// Start the server after syncing the database
-sequelize.sync({ alter: true })
+// starting the server after syncing the database
+sequelize.sync({ alter: true }) // bootsrapping database - this updates the table schema if made without dropping the table
   .then(() => {
     console.log("Database & tables synced!");
 
@@ -42,6 +42,7 @@ app.head('/healthz', setHeaders, (req, res) => {
   return res.status(405).send();
 });
 
+// setting response headers
 app.get('/healthz', setHeaders, (req, res) => {
 
   if (Object.keys(req.query).length > 0 || req._body || Object.keys(req.body).length > 0 || req.headers['authorization'] || req.get('Content-Length') !== undefined) {
@@ -51,7 +52,7 @@ app.get('/healthz', setHeaders, (req, res) => {
   return healthCheck(req, res);
 });
 
-// Catch-all for unsupported methods on /healthz to return 405
+// unsupported methods on /healthz to return 405
 app.all('/healthz', setHeaders, (req, res) => {
   return res.status(405).send();
 });
