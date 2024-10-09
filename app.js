@@ -1,7 +1,7 @@
 require('dotenv').config({ path: `${process.cwd()}/.env` });
 const express = require('express');
 const authRouter = require('./route/authRoute');
-const { Sequelize } = require('sequelize');
+const { sequelize } = require('./db/models/index');
 const { checkDatabaseConnection, healthCheck } = require('./middleware/databaseCheck');  // Import middleware
 const setHeaders = require('./middleware/setHeaders');
 
@@ -9,30 +9,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
-// connecting to Postgres
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  dialect: 'postgres'
-});
 
 // checking database connection and then onto next routes
 app.use('/v1/user', checkDatabaseConnection, authRouter); 
-
-// starting the server after syncing the database
-sequelize.sync({ alter: true }) // bootsrapping database - this updates the table schema if made without dropping the table
-  .then(() => {
-    console.log("Database & tables synced!");
-
-    const PORT = process.env.APP_PORT;
-    app.listen(PORT, () => {
-      console.log('Server up and running on port', PORT);
-    });
-  })
-  .catch((error) => {
-    console.error("Error syncing database or starting server: ", error);
-  });
-
 
 // --- Health check route ---
 
@@ -64,4 +43,19 @@ app.get('*', setHeaders, (req, res) => {
 });
   // ---  end of /healthz  ---
 
-  module.exports = app;
+
+  // starting the server after syncing the database
+sequelize.sync({ alter: true }) // bootsrapping database - this updates the table schema if made without dropping the table
+.then(() => {
+  console.log("Database & tables synced!");
+
+  const PORT = process.env.APP_PORT;
+  app.listen(PORT, () => {
+    console.log('Server up and running on port', PORT);
+  });
+})
+.catch((error) => {
+  console.error("Error syncing database or starting server: ", error);
+});
+
+  module.exports = { sequelize, app };
