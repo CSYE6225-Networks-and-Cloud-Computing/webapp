@@ -2,14 +2,13 @@ name: WebApp CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build-and-test:
+    name : pr-check
     runs-on: ubuntu-latest
 
     env:
