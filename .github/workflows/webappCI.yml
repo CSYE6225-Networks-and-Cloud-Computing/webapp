@@ -38,6 +38,7 @@ jobs:
     - name: Install npm dependencies
       run: npm ci
 
+      
     - name: Set up PostgreSQL user and database
       run: |
         sudo -i -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
