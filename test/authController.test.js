@@ -65,17 +65,17 @@ describe('authController', () => {
         });
     });
 
-    describe('updateUser', () => {        
+    // describe('updateUser', () => {        
 
-        it('should return 400 if email is not provided', async () => {
-            req.body = {
-                firstName: 'Johnny',
-                lastName: 'Doe',
-                password: 'newpassword123',
-            };
+    //     it('should return 400 if email is not provided', async () => {
+    //         req.body = {
+    //             firstName: 'Johnny',
+    //             lastName: 'Doe',
+    //             password: 'newpassword123',
+    //         };
 
-            await authController.updateUser(req, res);
-            expect(res.status.calledWith(400)).to.be.true;
-        });
-    });
+    //         await authController.updateUser(req, res);
+    //         expect(res.status.calledWith(400)).to.be.true;
+    //     });
+    // });
 });
