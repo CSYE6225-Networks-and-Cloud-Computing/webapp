@@ -5,7 +5,7 @@ This repository contains a cloud-native web application that includes a `/health
 ## Prerequisites
 
 Before you begin, ensure you have the following software installed on your local machine:
-
+ 
 - **Node.js** (v19.x or higher)
 - **npm** (comes with Node.js) 
 - **PostgreSQL** database
