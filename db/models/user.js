@@ -27,19 +27,22 @@ module.exports = (sequelize) => {
       allowNull: false,
       unique: true,
     },
-    // account_created: {
-    //   allowNull: false,
-    //   type: DataTypes.DATE,
-    //   defaultValue: DataTypes.NOW,
-    // },
-    // account_updated: {
-    //   allowNull: false,
-    //   type: DataTypes.DATE,
-    //   defaultValue: DataTypes.NOW,
-    // },
+    account_created: {
+      allowNull: false,
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    account_updated: {
+      allowNull: false,
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
     
   }, {
+    createdAt: 'account_created', // Custom createdAt field
+    updatedAt: 'account_updated', // Custom updatedAt field
     freezeTableName: true,
+    // modelName: 'user',
   });
 
   return user; // Return the model

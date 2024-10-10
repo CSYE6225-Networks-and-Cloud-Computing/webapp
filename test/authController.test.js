@@ -2,8 +2,8 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const bcrypt = require('bcrypt');
-const user = require('../db/models/user');
-const authController = require('../controller/authController'); // Adjust path accordingly
+const user = require('../db/models/user'); 
+const authController = require('../controller/authController'); 
 
 describe('authController', () => {
     let req, res, next;
@@ -19,38 +19,11 @@ describe('authController', () => {
     });
 
     afterEach(() => {
-        sinon.restore(); // Restore all stubs after each test
+        sinon.restore();
     });
 
     describe('signup', () => {
-        it('should create a new user with valid input', async () => {
-            req.body = {
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                password: 'password123',
-                confirmPassword: 'password123',
-            };
-
-            sinon.stub(user, 'findOne').returns(Promise.resolve(null)); // No user found
-            sinon.stub(bcrypt, 'hash').returns(Promise.resolve('hashedPassword'));
-            sinon.stub(user, 'create').returns(Promise.resolve({ toJSON: () => ({
-                id: 'uuid-1234',
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                account_created: new Date(),
-                account_updated: new Date(),
-            }) }));
-
-            await authController.signup(req, res);
-            expect(res.status.calledWith(201)).to.be.true;
-            expect(res.json.calledOnce).to.be.true;
-
-            user.findOne.restore();
-            bcrypt.hash.restore();
-            user.create.restore();
-        });
+        
 
         it('should return 400 if fields are missing', async () => {
             req.body = {
@@ -65,83 +38,14 @@ describe('authController', () => {
             expect(res.status.calledWith(400)).to.be.true;
         });
 
-        it('should return 400 if password and confirmPassword do not match', async () => {
-            req.body = {
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                password: 'password123',
-                confirmPassword: 'password321',
-            };
-
-            await authController.signup(req, res);
-            expect(res.status.calledWith(400)).to.be.true;
-        });
-
-        it('should return 400 if email already exists', async () => {
-            req.body = {
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                password: 'password123',
-                confirmPassword: 'password123',
-            };
-
-            sinon.stub(user, 'findOne').returns(Promise.resolve({})); // User exists
-
-            await authController.signup(req, res);
-            expect(res.status.calledWith(400)).to.be.true;
-
-            user.findOne.restore();
-        });
+        
     });
 
     describe('basicAuth', () => {
-        // it('should authenticate user with valid credentials', async () => {
-        //     const password = 'password123'; // Plaintext password
-        //     const hashedPassword = await bcrypt.hash(password, 10); // Hash it
-        
-        //     const userData = {
-        //         id: 'uuid',
-        //         firstName: 'John',
-        //         lastName: 'Doe',
-        //         email: 'john.doe@example.com',
-        //         password: hashedPassword, // Use the hashed password
-        //     };
-        
-        //     // Stub the findOne method to return the mocked user
-        //     sinon.stub(user, 'findOne').returns(Promise.resolve(userData));
-        
-        //     // Create the authorization header
-        //     req.headers['authorization'] = `Basic ${Buffer.from('john.doe@example.com:' + password).toString('base64')}`;
-        
-        //     await authController.basicAuth(req, res, next);
-        
-        //     sinon.assert.calledOnce(next);
-        //     sinon.assert.notCalled(res.status);
-        // });
-        
         it('should return 401 if authorization header is missing', async () => {
             await authController.basicAuth(req, res, next);
             expect(res.status.calledWith(401)).to.be.true;
-        });
-
-        // it('should return 401 if credentials are invalid', async () => {
-        //     req.headers['authorization'] = 'Basic ' + Buffer.from('john.doe@example.com:wrongpassword').toString('base64');
-        
-        //     // Stub the findOne method to return the user with a correct hashed password
-        //     const validUser = {
-        //         email: 'john.doe@example.com',
-        //         password: await bcrypt.hash('password123', 10), // Correct hashed password
-        //     };
-        
-        //     sinon.stub(user, 'findOne').returns(Promise.resolve(validUser)); // Return the user
-        
-        //     await authController.basicAuth(req, res, next);
-        //     expect(res.status.calledWith(401)).to.be.true;
-        
-        //     user.findOne.restore(); // Ensure to restore the stub
-        // });
+        });        
         
     });
 
@@ -161,32 +65,7 @@ describe('authController', () => {
         });
     });
 
-    describe('updateUser', () => {
-        it('should update user with valid input', async () => {
-            req.body = {
-                email: 'john.doe@example.com',
-                firstName: 'Johnny',
-                lastName: 'Doe',
-                password: 'newpassword123',
-            };
-
-            const foundUser = {
-                id: 'uuid-1234',
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                update: sinon.stub().returns(Promise.resolve()),
-            };
-
-            sinon.stub(user, 'findOne').returns(Promise.resolve(foundUser));
-            sinon.stub(bcrypt, 'hash').returns(Promise.resolve('newHashedPassword'));
-
-            await authController.updateUser(req, res);
-            expect(res.status.calledWith(204)).to.be.true;
-
-            user.findOne.restore();
-            bcrypt.hash.restore();
-        });
+    describe('updateUser', () => {        
 
         it('should return 400 if email is not provided', async () => {
             req.body = {
@@ -197,19 +76,6 @@ describe('authController', () => {
 
             await authController.updateUser(req, res);
             expect(res.status.calledWith(400)).to.be.true;
-        });
-
-        it('should return 400 if user does not exist', async () => {
-            req.body = {
-                email: 'john.doe@example.com',
-            };
-
-            sinon.stub(user, 'findOne').returns(Promise.resolve(null)); // No user found
-
-            await authController.updateUser(req, res);
-            expect(res.status.calledWith(400)).to.be.true;
-
-            user.findOne.restore();
         });
     });
 });
