@@ -18,7 +18,8 @@ app.use('/v1/user', checkDatabaseConnection, authRouter);
 // HEAD requests
 app.head('/healthz', setHeaders, (req, res) => {
   // Return 405 Method Not Allowed for HEAD
-  return res.status(405).send();
+  // return res.status(405).send();
+  return res.status(200).send();
 });
 
 // setting response headers
