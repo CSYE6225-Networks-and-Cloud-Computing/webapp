@@ -52,7 +52,7 @@ variable "postgres_password" {
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "csye6225_f24_app_${formatdate("YYYY_MM_DD", timestamp())}"
+  ami_name        = "csye6225_trial_${formatdate("YYYY_MM_DD", timestamp())}"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
 
