@@ -1,0 +1,35 @@
+name: Packer CI
+
+on:
+#   push:
+#     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  packer-ci:
+    name: Packer Validation and Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up HashiCorp Packer
+      uses: hashicorp/setup-packer@v1
+      with:
+        packer_version: latest
+
+    - name: Run packer fmt
+      id: fmt
+      run: |
+        packer fmt -check .
+      
+      # Fail if packer fmt makes changes
+      continue-on-error: false
+      if: failure() # This ensures that the job fails if packer fmt makes modifications
+
+    - name: Run packer validate
+      id: validate
+      run: |
+        packer validate packertemp.pkr.hcl
