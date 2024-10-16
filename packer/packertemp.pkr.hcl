@@ -7,25 +7,48 @@ packer {
   }
 }
 
+# AWS Region
 variable "aws_region" {
   type    = string
   default = "us-east-1"
 }
 
+# Ubuntu 24.04 LTS AMI ID
 variable "source_ami" {
   type    = string
-  default = "ami-02b71e4c18caedcb5" # Ubuntu 24.04 LTS AMI ID
+  default = "ami-0866a3c8686eaeeba"
 }
 
+# SSH username for the EC2 instance
 variable "ssh_username" {
   type    = string
   default = "ubuntu"
 }
 
+# Subnet ID
 variable "subnet_id" {
   type    = string
-  default = "subnet-002a37c327e4150b5" # Replace with your actual subnet ID
+  default = "subnet-002a37c327e4150b5"
 }
+
+# Instance Type
+variable "instance_type" {
+  type    = string
+  default = "t2.small"
+}
+
+# Volume Size (for PostgreSQL)
+variable "volume_size" {
+  type    = number
+  default = 25
+}
+
+# PostgreSQL Password (can also be stored in an environment variable)
+variable "postgres_password" {
+  type    = string
+  default = "postgres"
+}
+
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
@@ -33,11 +56,14 @@ source "amazon-ebs" "my-ami" {
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
 
-  instance_type = "t2.small"
-  source_ami    = var.source_ami
-  ssh_username  = var.ssh_username
-  subnet_id     = var.subnet_id
+  instance_type   = "t2.small"
+  source_ami      = var.source_ami
+  ssh_interface   = "public_ip"  # Ensures SSH via public IP
+  ssh_username    = var.ssh_username
 
+  subnet_id       = var.subnet_id
+
+  # EBS volume settings
   launch_block_device_mappings {
     delete_on_termination = true
     device_name           = "/dev/sda1"
@@ -51,26 +77,53 @@ build {
     "source.amazon-ebs.my-ami",
   ]
 
+  
   provisioner "shell" {
-    environment_vars = [
-      "DEBIAN_FRONTEND=noninteractive",
-      "CHECKPOINT_DISABLE=1"
-    ]
-
-    inline = [
-      # Update and upgrade system
-      "sudo apt-get update",
-      "sudo apt-get upgrade -y",
-
-      # Install PostgreSQL
-      "sudo apt-get install -y postgresql postgresql-contrib",
-
-      # Enable and start PostgreSQL service
-      "sudo systemctl enable postgresql",
-      "sudo systemctl start postgresql",
-
-      # Clean up the instance
-      "sudo apt-get clean"
-    ]
+    script = "scripts/sh1.sh"
   }
+
+  provisioner "shell" {
+    script = "scripts/sh2.sh"
+  }
+
+  provisioner "shell" {
+    script = "scripts/sh3.sh"
+  }
+
+  provisioner "file" {
+  source      = "../"
+  destination = "/tmp/webapp_t01/"
+}
+
+  provisioner "shell" {
+    script = "scripts/sh4.sh"
+  }
+
+  // provisioner "shell" {
+  //   script = "scripts/sh5.sh"
+  // }
+
+  # Provision PostgreSQL and other setup via setup.sh
+  // provisioner "shell" {
+  //   script = "scripts/mkdir.sh"
+  // }
+
+  // provisioner "file" {
+  //   source      = "../"
+  //   destination = "/tmp/webapp_t01/" 
+  // }
+
+  // provisioner "shell" {
+  //   script = "scripts/movensetup.sh"
+  // }
+  
+  // provisioner "shell" {
+  //   script = "scripts/build_webapp.sh"
+
+  //   environment_vars = [
+  //     "POSTGRES_PASSWORD=${var.postgres_password}" # Use the postgres_password variable
+  //   ]
+  // }
+
+  
 }
