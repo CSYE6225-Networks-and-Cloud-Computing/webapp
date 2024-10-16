@@ -15,10 +15,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up HashiCorp Packer
-      uses: hashicorp/setup-packer@v1
+    # Set up HashiCorp Packer using the correct version
+    - name: Setup Packer
+      uses: hashicorp/setup-packer@main
+      id: setup
       with:
-        packer_version: latest
+        version: "1.11.2" 
 
     - name: Run packer fmt
       id: fmt
