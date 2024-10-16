@@ -31,7 +31,7 @@ jobs:
     - name: Run packer fmt
       id: fmt
       run: |
-        cd ./packer
+        cd packer
         packer fmt -check .
       
       # Fail if packer fmt makes changes
@@ -43,5 +43,5 @@ jobs:
       working-directory: packer
       run: |
         set -e
-        cd ./packer
+        cd packer
         packer validate .
