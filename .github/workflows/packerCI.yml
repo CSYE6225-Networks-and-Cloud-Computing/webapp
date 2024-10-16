@@ -21,7 +21,13 @@ jobs:
       id: setup
       with:
         version: "1.11.2" 
+    
+    # Run packer init to install the necessary plugins
+    - name: Run packer init
+      run: |
+        packer init .
 
+        
     - name: Run packer fmt
       id: fmt
       run: |
