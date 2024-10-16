@@ -42,4 +42,5 @@ jobs:
       id: validate
     #   working-directory: packer
       run: |
-        packer validate ./packer/packertemp.pkr.hcl
+        cd packer
+        packer validate packertemp.pkr.hcl

@@ -88,6 +88,7 @@ build {
 
   provisioner "shell" {
     script = "scripts/sh3.sh"
+    //  script = "./scripts/sh3.sh"
   }
 
   provisioner "file" {
@@ -98,32 +99,5 @@ build {
   provisioner "shell" {
     script = "scripts/sh4.sh"
   }
-
-  // provisioner "shell" {
-  //   script = "scripts/sh5.sh"
-  // }
-
-  # Provision PostgreSQL and other setup via setup.sh
-  // provisioner "shell" {
-  //   script = "scripts/mkdir.sh"
-  // }
-
-  // provisioner "file" {
-  //   source      = "../"
-  //   destination = "/tmp/webapp_t01/" 
-  // }
-
-  // provisioner "shell" {
-  //   script = "scripts/movensetup.sh"
-  // }
-  
-  // provisioner "shell" {
-  //   script = "scripts/build_webapp.sh"
-
-  //   environment_vars = [
-  //     "POSTGRES_PASSWORD=${var.postgres_password}" # Use the postgres_password variable
-  //   ]
-  // }
-
   
 }
