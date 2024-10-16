@@ -1,0 +1,103 @@
+packer {
+  required_plugins {
+    amazon = {
+      version = ">= 1.0.0, < 2.0.0"
+      source  = "github.com/hashicorp/amazon"
+    }
+  }
+}
+
+# AWS Region
+variable "aws_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+# Ubuntu 24.04 LTS AMI ID
+variable "source_ami" {
+  type    = string
+  default = "ami-0866a3c8686eaeeba"
+}
+
+# SSH username for the EC2 instance
+variable "ssh_username" {
+  type    = string
+  default = "ubuntu"
+}
+
+# Subnet ID
+variable "subnet_id" {
+  type    = string
+  default = "subnet-002a37c327e4150b5"
+}
+
+# Instance Type
+variable "instance_type" {
+  type    = string
+  default = "t2.small"
+}
+
+# Volume Size (for PostgreSQL)
+variable "volume_size" {
+  type    = number
+  default = 25
+}
+
+# PostgreSQL Password (can also be stored in an environment variable)
+variable "postgres_password" {
+  type    = string
+  default = "postgres"
+}
+
+
+source "amazon-ebs" "my-ami" {
+  region          = var.aws_region
+  ami_name        = "csye6225_trial_${formatdate("YYYY_MM_DD", timestamp())}"
+  ami_description = "AMI for A04"
+  ami_regions     = ["us-east-1"]
+
+  instance_type   = "t2.small"
+  source_ami      = var.source_ami
+  ssh_interface   = "public_ip"  # Ensures SSH via public IP
+  ssh_username    = var.ssh_username
+
+  subnet_id       = var.subnet_id
+
+  # EBS volume settings
+  launch_block_device_mappings {
+    delete_on_termination = true
+    device_name           = "/dev/sda1"
+    volume_size           = 25 # Increase disk size for PostgreSQL
+    volume_type           = "gp2"
+  }
+}
+
+build {
+  sources = [
+    "source.amazon-ebs.my-ami",
+  ]
+
+  
+  provisioner "shell" {
+    script = "scripts/sh1.sh"
+  }
+
+  provisioner "shell" {
+    script = "scripts/sh2.sh"
+  }
+
+  provisioner "shell" {
+    script = "scripts/sh3.sh"
+    //  script = "./scripts/sh3.sh"
+  }
+
+  provisioner "file" {
+  source      = "../"
+  destination = "/tmp/webapp_t01/"
+}
+
+  provisioner "shell" {
+    script = "scripts/sh4.sh"
+  }
+  
+}
