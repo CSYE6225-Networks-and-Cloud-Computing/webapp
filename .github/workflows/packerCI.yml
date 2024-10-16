@@ -25,12 +25,13 @@ jobs:
     # Run packer init to install the necessary plugins
     - name: Run packer init
       run: |
-        packer init .
+        packer init ./packer/packertemp.pkr.hcl
 
-        
+
     - name: Run packer fmt
       id: fmt
       run: |
+        cd ./packer
         packer fmt -check .
       
       # Fail if packer fmt makes changes
@@ -41,4 +42,6 @@ jobs:
       id: validate
       working-directory: packer
       run: |
-        packer validate packertemp.pkr.hcl
+        set -e
+        cd ./packer
+        packer validate .
