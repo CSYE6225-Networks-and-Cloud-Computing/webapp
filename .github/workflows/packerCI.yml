@@ -33,5 +33,6 @@ jobs:
 
     - name: Run packer validate
       id: validate
+      working-directory: packer
       run: |
         packer validate packertemp.pkr.hcl
