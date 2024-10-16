@@ -40,8 +40,6 @@ jobs:
 
     - name: Run packer validate
       id: validate
-      working-directory: packer
+    #   working-directory: packer
       run: |
-        set -e
-        cd packer
-        packer validate .
+        packer validate ./packer/packertemp.pkr.hcl
