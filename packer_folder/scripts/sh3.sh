@@ -11,7 +11,7 @@
 
 # Create the directory for the webapp binary
 echo "-------Creating the webapp binary directory-------"
-sudo mkdir -p opt/csye6225
+sudo mkdir -p /opt/csye6225
 sudo chown csye6225:csye6225 /opt/csye6225
 sudo mv /tmp/webapp.zip /opt/csye6225/
 
