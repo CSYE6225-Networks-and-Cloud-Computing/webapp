@@ -1,0 +1,75 @@
+name: Ami_Test_Creation
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: pr-check
+    runs-on: ubuntu-latest
+
+    env:
+      PGHOST: ${{ secrets.PGHOST }}
+      PGPORT: ${{ secrets.PGPORT }}
+      PGUSER: postgres
+      PGPASSWORD: ${{ secrets.PGPASSWORD }}
+      PGDATABASE: ${{ secrets.PGDATABASE }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+    
+
+
+
+      - name: Create .env file
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "APP_PORT=${{ secrets.APP_PORT }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+
+      - name: Create Zip File
+        run: |
+          zip -r webapp_t01.zip .
+        
+      - name: List Files
+        run: ls -al
+
+      - name: Upload Zip File
+        uses: actions/upload-artifact@v3
+        with:
+          name: webapp_t01 zip creation
+          path: webapp_t01.zip
+          
+          
+      - name: Move Zip file to Packer Folder 
+        run: |
+          ls
+          pwd
+          sudo mv /home/runner/work/webapp/webapp/webapp.zip /home/runner/work/webapp/webapp/packer_folder/
+
+
+
+      - name: Run Packer
+        run: |
+          # Install Packer
+          curl -fsSL https://releases.hashicorp.com/packer/1.7.3/packer_1.7.3_linux_amd64.zip -o packer.zip
+          unzip packer.zip
+          sudo mv packer /usr/local/bin/
+          ls
+          pwd
+          cd packer_folder
+          packer init packertemp.pkr.hcl
+
+          packer build -var "aws_access_key=${{ secrets.ACCESS_KEY }}" \
+             -var "aws_secret_access_key=${{ secrets.SECRET_ACCESS_KEY }}" \
+             aws.pkr.hcl

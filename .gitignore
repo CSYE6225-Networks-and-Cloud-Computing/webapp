@@ -165,3 +165,5 @@ yarn.lock
 # Ignore all local history of files
 .history
 .ionide
+
+*.pkvars.hcl
