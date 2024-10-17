@@ -72,4 +72,4 @@ jobs:
 
           packer build -var "aws_access_key=${{ secrets.ACCESS_KEY }}" \
              -var "aws_secret_access_key=${{ secrets.SECRET_ACCESS_KEY }}" \
-             aws.pkr.hcl
+             packertemp.pkr.hcl
