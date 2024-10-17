@@ -1,4 +1,5 @@
 const user = require("../db/models/user");
+// const user = require("../db/models/index");
 const bcrypt = require('bcrypt');
 const { Sequelize } = require('sequelize');
 
@@ -47,37 +48,39 @@ const basicAuth = (req, res, next) => {
 
 // --- Signup Function ---
 const signup = async (req, res) => {
+    console.log("........you have entered signup at this point........");
     const { firstName, lastName, email, password, confirmPassword } = req.body;
-
+    console.log("........you have crossed const at this point........");
     // validating required fields
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-        return res.status(400).json({
-            status: 'fail',
-            message: 'All fields are required: firstName, lastName, email, password, confirmPassword',
-        });
-    }
+    // if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    //     return res.status(400).json({
+    //         status: 'fail',
+    //         message: 'All fields are required: firstName, lastName, email, password, confirmPassword',
+    //     });
+    // }
 
     // validating if password and confirmPassword match
-    if (password !== confirmPassword) {
-        return res.status(400).json({
-            status: 'fail',
-            message: 'Password and confirm password must match',
-        });
-    }
+    // if (password !== confirmPassword) {
+    //     return res.status(400).json({
+    //         status: 'fail',
+    //         message: 'Password and confirm password must match',
+    //     });
+    // }
+
     // validating if first name and last name fields are only alphabets
-    const nameValidation = /^[A-Za-z]+$/;
-    if (!nameValidation.test(firstName)) {
-        return res.status(400).json({
-            status: 'fail',
-            message: 'First name should contain only alphabets',
-        });
-    }
-    if (!nameValidation.test(lastName)) {
-        return res.status(400).json({
-            status: 'fail',
-            message: 'Last name should contain only alphabets',
-        });
-    }
+    // const nameValidation = /^[A-Za-z]+$/;
+    // if (!nameValidation.test(firstName)) {
+    //     return res.status(400).json({
+    //         status: 'fail',
+    //         message: 'First name should contain only alphabets',
+    //     });
+    // }
+    // if (!nameValidation.test(lastName)) {
+    //     return res.status(400).json({
+    //         status: 'fail',
+    //         message: 'Last name should contain only alphabets',
+    //     });
+    // }
 
     // validating if email entered is in the correct format
     const emailValidation = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,6 +94,8 @@ const signup = async (req, res) => {
     try {
         // checking if the email already exists
         const isOldUser = await user.findOne({ where: { email } });
+        console.log(isOldUser);
+        console.log("........you have reached this point........");
         if (isOldUser) {
             return res.status(400).json({
                 status: 'fail',
@@ -100,7 +105,7 @@ const signup = async (req, res) => {
 
         // hashing the password before storing
         const hashedPassword = await bcrypt.hash(password, 10);
-
+        console.log("........you have reached this point.......hashed Pass: .",hashedPassword);
         // creating a new user with the hashed password and all the details
         const newUser = await user.create({
             firstName,
@@ -110,7 +115,7 @@ const signup = async (req, res) => {
         });
 
         const result = newUser.toJSON();
-
+        console.log("........you have reached this point.......hashed Pass: .",newUser);
         return res.status(201).json({
             id: result.id,
             firstName: result.firstName,
