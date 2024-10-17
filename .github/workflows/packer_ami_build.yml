@@ -1,4 +1,4 @@
-name: Ami_Test_Creation
+name: Packer Build CI
 
 on:
 #   push:
