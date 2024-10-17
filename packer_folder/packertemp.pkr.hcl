@@ -18,7 +18,7 @@ variable "aws_access_key" {
   default = "AWS access key"
 }
 
-variable "aws_secret_key" {
+variable "aws_secret_access_key" {
   type = string
   default = "AWS secret key"
 }
@@ -72,7 +72,7 @@ source "amazon-ebs" "my-ami" {
   ssh_username    = var.ssh_username
 
   access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
+  secret_key = var.aws_secret_access_key
 
   subnet_id       = var.subnet_id
 
