@@ -77,7 +77,7 @@ variable "DB_PASSWORD" {
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "csye6225_ami_NEW"
+  ami_name        = "csye6225_ami_AGAIN"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
 
@@ -156,8 +156,8 @@ provisioner "file" {
     script = "scripts/sh4.sh"
   }
 
-  // provisioner "shell" {
-  //   script = "scripts/sh5.sh"
-  // }
+  provisioner "shell" {
+    script = "scripts/sh5.sh"
+  }
   
 }

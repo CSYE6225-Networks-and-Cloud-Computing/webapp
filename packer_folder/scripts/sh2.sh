@@ -40,6 +40,7 @@ sudo systemctl enable postgresql
 sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;"
 
 # Create the user (if needed)
+echo "HIRRRR CHECK WHAT IS THE PASSWORD: $DB_PASSWORD"
 sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD $DB_PASSWORD;"
 
 # Grant all privileges on the database to the user

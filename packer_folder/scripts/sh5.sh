@@ -6,7 +6,7 @@ Description=Node.js WebApp
 After=network.target 
 
 [Service]
-ExecStart=/usr/bin/node /opt/webapp_t01/app.js
+ExecStart=/usr/bin/node /opt/csye6225/app.js
 Restart=always
 User=csye6225
 Group=csye6225
@@ -18,9 +18,13 @@ Environment=DB_PASSWORD=${DB_PASSWORD}
 Environment=DB_HOST=${DB_HOST}
 Environment=DB_PORT=${DB_PORT}
 Environment=APP_PORT=${APP_PORT}  # Add the PORT variable here
-WorkingDirectory=/opt/webapp_t01
+WorkingDirectory=/opt/csye6225
 
 [Install]
 WantedBy=multi-user.target
 EOL'
 
+# Enable and start the webapp service
+sudo systemctl daemon-reload
+sudo systemctl enable webapp.service
+sudo systemctl start webapp.service

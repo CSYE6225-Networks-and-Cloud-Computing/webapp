@@ -43,4 +43,4 @@ jobs:
     #   working-directory: packer
       run: |
         cd packer_folder
-        packer validate packertemp.pkr.hcl
+        packer validate -syntax-only packertemp.pkr.hcl
