@@ -37,11 +37,11 @@ DB_USER_1="postgres"
 DB_PASSWORD_1="postgres"
 
 # Create the database
-sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME_1};"
-echo "HIRRRR CHECK WHAT IS THE DATABASE NAME?: ${DB_NAME_1}"
+sudo -u postgres psql -c "CREATE DATABASE 'user';"
+# echo "HIRRRR CHECK WHAT IS THE DATABASE NAME?: ${DB_NAME_1}"
 # Create the user (if needed)
-echo "HIRRRR CHECK WHAT IS THE PASSWORD: ${DB_PASSWORD_1}"
-sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD ${DB_PASSWORD_1};"
+# echo "HIRRRR CHECK WHAT IS THE PASSWORD: ${DB_PASSWORD_1}"
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 
 # Grant all privileges on the database to the user
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME_1} TO ${DB_USER_1};"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE user TO postgres;"
