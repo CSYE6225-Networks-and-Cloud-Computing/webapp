@@ -145,6 +145,11 @@ provisioner "file" {
 
   provisioner "shell" {
     script = "scripts/sh2.sh"
+    environment_vars = [
+    "DB_NAME=${var.DB_NAME}",
+    "DB_USER=${var.DB_USERNAME}",
+    "DB_PASSWORD=${var.DB_PASSWORD}"
+  ]
   }
 
   provisioner "shell" {
