@@ -35,16 +35,16 @@ variable "ssh_username" {
   default = "ubuntu"
 }
 
-# Subnet ID
-variable "subnet_id" {
-  type    = string
-  default = "subnet-002a37c327e4150b5"
-}
+// # Subnet ID
+// variable "subnet_id" {
+//   type    = string
+//   default = "subnet-002a37c327e4150b5"
+// }
 
 # Instance Type
 variable "instance_type" {
   type    = string
-  default = "t2.small"
+  default = "t2.micro"
 }
 
 # Volume Size (for PostgreSQL)
@@ -89,7 +89,7 @@ source "amazon-ebs" "my-ami" {
   access_key = var.aws_access_key
   secret_key = var.aws_secret_access_key
 
-  subnet_id       = var.subnet_id
+  // subnet_id       = var.subnet_id
 
   # EBS volume settings
   launch_block_device_mappings {
