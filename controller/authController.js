@@ -1,5 +1,5 @@
-const user = require("../db/models/user");
-// const user = require("../db/models/index");
+// const user = require("../db/models/user");
+const {user} = require("../db/models/index");
 const bcrypt = require('bcrypt');
 const { Sequelize } = require('sequelize');
 
@@ -52,35 +52,35 @@ const signup = async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword } = req.body;
     console.log("........you have crossed const at this point........");
     // validating required fields
-    // if (!firstName || !lastName || !email || !password || !confirmPassword) {
-    //     return res.status(400).json({
-    //         status: 'fail',
-    //         message: 'All fields are required: firstName, lastName, email, password, confirmPassword',
-    //     });
-    // }
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'All fields are required: firstName, lastName, email, password, confirmPassword',
+        });
+    }
 
     // validating if password and confirmPassword match
-    // if (password !== confirmPassword) {
-    //     return res.status(400).json({
-    //         status: 'fail',
-    //         message: 'Password and confirm password must match',
-    //     });
-    // }
+    if (password !== confirmPassword) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Password and confirm password must match',
+        });
+    }
 
     // validating if first name and last name fields are only alphabets
-    // const nameValidation = /^[A-Za-z]+$/;
-    // if (!nameValidation.test(firstName)) {
-    //     return res.status(400).json({
-    //         status: 'fail',
-    //         message: 'First name should contain only alphabets',
-    //     });
-    // }
-    // if (!nameValidation.test(lastName)) {
-    //     return res.status(400).json({
-    //         status: 'fail',
-    //         message: 'Last name should contain only alphabets',
-    //     });
-    // }
+    const nameValidation = /^[A-Za-z]+$/;
+    if (!nameValidation.test(firstName)) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'First name should contain only alphabets',
+        });
+    }
+    if (!nameValidation.test(lastName)) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Last name should contain only alphabets',
+        });
+    }
 
     // validating if email entered is in the correct format
     const emailValidation = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
