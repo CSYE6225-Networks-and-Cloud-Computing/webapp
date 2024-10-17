@@ -1,14 +1,14 @@
 name: Packer Build CI
 
 on:
-#   push:
-#     branches: ["main"]
-  pull_request:
+  push:
     branches: ["main"]
+#   pull_request:
+#     branches: ["main"]
 
 jobs:
   build:
-    name: pr-check
+    name: packer-build
     runs-on: ubuntu-latest
 
     env:
