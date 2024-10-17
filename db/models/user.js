@@ -4,6 +4,7 @@ const { DataTypes } = require('sequelize');
 // Export a function that takes sequelize as an argument
 module.exports = (sequelize) => {
   const user = sequelize.define('user', {
+    // const User = sequelize.define('User', {
     id: {
       allowNull: false,
       primaryKey: true,
@@ -46,4 +47,5 @@ module.exports = (sequelize) => {
   });
 
   return user; // Return the model
+  // return User;
 };

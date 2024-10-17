@@ -13,6 +13,16 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "aws_access_key" {
+  type = string
+  default = "AWS access key"
+}
+
+variable "aws_secret_access_key" {
+  type = string
+  default = "AWS secret key"
+}
+
 # Ubuntu 24.04 LTS AMI ID
 variable "source_ami" {
   type    = string
@@ -25,16 +35,16 @@ variable "ssh_username" {
   default = "ubuntu"
 }
 
-# Subnet ID
-variable "subnet_id" {
-  type    = string
-  default = "subnet-002a37c327e4150b5"
-}
+// # Subnet ID
+// variable "subnet_id" {
+//   type    = string
+//   default = "subnet-002a37c327e4150b5"
+// }
 
 # Instance Type
 variable "instance_type" {
   type    = string
-  default = "t2.small"
+  default = "t2.micro"
 }
 
 # Volume Size (for PostgreSQL)
@@ -49,19 +59,37 @@ variable "postgres_password" {
   default = "postgres"
 }
 
+variable "DB_NAME" {
+  type    = string
+  default = "user"
+}
+
+variable "DB_USERNAME" {
+  type    = string
+  default = "postgres"
+}
+
+variable "DB_PASSWORD" {
+  type    = string
+  default = "postgres"
+}
+
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "csye6225_trial_${formatdate("YYYY_MM_DD", timestamp())}"
+  ami_name        = "ami_main_test_01"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
 
-  instance_type   = "t2.small"
+  instance_type   = "t2.micro"
   source_ami      = var.source_ami
   ssh_interface   = "public_ip"  # Ensures SSH via public IP
   ssh_username    = var.ssh_username
 
-  subnet_id       = var.subnet_id
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_access_key
+
+  // subnet_id       = var.subnet_id
 
   # EBS volume settings
   launch_block_device_mappings {
@@ -78,26 +106,58 @@ build {
   ]
 
   
+//   provisioner "shell" {
+//     script = "scripts/sh1.sh"
+//   }
+
+//   provisioner "shell" {
+//     script = "scripts/sh2.sh"
+//   }
+
+//   provisioner "shell" {
+//     script = "scripts/sh3.sh"
+//     //  script = "./scripts/sh3.sh"
+//   }
+
+//   provisioner "file" {
+//   source      = "./webapp_t01.zip" 
+//   destination = "/tmp/webapp_t01.zip"
+// }
+
+//   provisioner "shell" {
+//     script = "scripts/sh4.sh"
+//   }
+
+provisioner "file" {
+      source      = "./webapp.zip"
+      destination = "/tmp/webapp.zip"
+    }
+  
+
   provisioner "shell" {
     script = "scripts/sh1.sh"
   }
 
   provisioner "shell" {
-    script = "scripts/sh2.sh"
+    script = "scripts/sh3.sh"
   }
+  
 
   provisioner "shell" {
-    script = "scripts/sh3.sh"
-    //  script = "./scripts/sh3.sh"
+    script = "scripts/sh2.sh"
+    environment_vars = [
+    "DB_NAME=${var.DB_NAME}",
+    "DB_USER=${var.DB_USERNAME}",
+    "DB_PASSWORD=${var.DB_PASSWORD}"
+  ]
   }
-
-  provisioner "file" {
-  source      = "../"
-  destination = "/tmp/webapp_t01/"
-}
 
   provisioner "shell" {
     script = "scripts/sh4.sh"
+  }
+
+  provisioner "shell" {
+    script = "scripts/sh5.sh"
   }
   
 }
