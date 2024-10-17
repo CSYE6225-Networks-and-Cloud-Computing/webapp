@@ -59,6 +59,21 @@ variable "postgres_password" {
   default = "postgres"
 }
 
+variable "DB_NAME" {
+  type    = string
+  default = "csyeTrial"
+}
+
+variable "DB_USERNAME" {
+  type    = string
+  default = "postgres"
+}
+
+variable "DB_PASSWORD" {
+  type    = string
+  default = "postgres"
+}
+
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
