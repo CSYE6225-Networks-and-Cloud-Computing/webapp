@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // checking database connection and then onto next routes
-app.use('/v1/user', checkDatabaseConnection, authRouter); 
+app.use('/v2/user', checkDatabaseConnection, authRouter); 
 
 // --- Health check route ---
 
