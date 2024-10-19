@@ -61,7 +61,7 @@ variable "postgres_password" {
 
 variable "DB_NAME" {
   type    = string
-  default = "user"
+  default = "users"
 }
 
 variable "DB_USERNAME" {
@@ -77,7 +77,7 @@ variable "DB_PASSWORD" {
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "ami_demo"
+  ami_name        = "ami_1910_1847"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
 
