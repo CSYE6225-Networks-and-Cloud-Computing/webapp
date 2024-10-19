@@ -61,7 +61,7 @@ variable "postgres_password" {
 
 variable "DB_NAME" {
   type    = string
-  default = "user"
+  default = "users"
 }
 
 variable "DB_USERNAME" {
