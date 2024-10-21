@@ -12,12 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PGHOST: ${{ secrets.PGHOST }}
-      PGPORT: ${{ secrets.PGPORT }}
-      PGUSER: postgres
-      PGPASSWORD: ${{ secrets.PGPASSWORD }}
-      PGDATABASE: ${{ secrets.PGDATABASE }}
+      DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
 
     steps:
       - name: Checkout code

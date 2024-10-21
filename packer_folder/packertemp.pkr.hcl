@@ -23,6 +23,18 @@ variable "aws_secret_access_key" {
   default = "AWS secret key"
 }
 
+variable "demo_user" {
+  description = "demo user ID"
+  type        = string
+  default     = "741448963082"
+}
+
+variable "dev_user" {
+  description = "dev user ID"
+  type        = string
+  default     = "522814688724"
+}
+
 # Ubuntu 24.04 LTS AMI ID
 variable "source_ami" {
   type    = string
@@ -77,9 +89,10 @@ variable "DB_PASSWORD" {
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "ami_1021_1945"
+  ami_name        = "ami_a04-{{timestamp}}"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
+  ami_users = [var.demo_user]
 
   instance_type   = "t2.micro"
   source_ami      = var.source_ami
@@ -88,6 +101,13 @@ source "amazon-ebs" "my-ami" {
 
   access_key = var.aws_access_key
   secret_key = var.aws_secret_access_key
+
+  // ami_users = [var.dev_user, var.demo_user]
+
+//   source_ami_filter {
+//    most_recent = true
+//    owners = [var.dev_user]
+// }
 
   // subnet_id       = var.subnet_id
 
