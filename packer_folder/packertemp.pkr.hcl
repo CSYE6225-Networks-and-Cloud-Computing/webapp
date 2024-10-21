@@ -66,30 +66,30 @@ variable "volume_size" {
 }
 
 # PostgreSQL Password (can also be stored in an environment variable)
-variable "postgres_password" {
-  type    = string
-  default = "postgres"
-}
+// variable "postgres_password" {
+//   type    = string
+//   default = "postgres"
+// }
 
-variable "DB_NAME" {
-  type    = string
-  default = "users"
-}
+// variable "DB_NAME" {
+//   type    = string
+//   default = "csye6225"
+// }
 
-variable "DB_USERNAME" {
-  type    = string
-  default = "postgres"
-}
+// variable "DB_USER" {
+//   type    = string
+//   default = "csye6225"
+// }
 
-variable "DB_PASSWORD" {
-  type    = string
-  default = "postgres"
-}
+// variable "DB_PASSWORD" {
+//   type    = string
+//   default = "csye6225"
+// }
 
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "ami_a04-{{timestamp}}"
+  ami_name        = "ami_a05-{{timestamp}}"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
   ami_users = [var.demo_user]
@@ -163,14 +163,14 @@ provisioner "file" {
   }
   
 
-  provisioner "shell" {
-    script = "scripts/sh2.sh"
-    environment_vars = [
-    "DB_NAME=${var.DB_NAME}",
-    "DB_USER=${var.DB_USERNAME}",
-    "DB_PASSWORD=${var.DB_PASSWORD}"
-  ]
-  }
+  // provisioner "shell" {
+  //   script = "scripts/sh2.sh"
+  //   environment_vars = [
+  //   "DB_NAME=${var.DB_NAME}",
+  //   "DB_USER=${var.DB_USERNAME}",
+  //   "DB_PASSWORD=${var.DB_PASSWORD}"
+  // ]
+  // }
 
   provisioner "shell" {
     script = "scripts/sh4.sh"
