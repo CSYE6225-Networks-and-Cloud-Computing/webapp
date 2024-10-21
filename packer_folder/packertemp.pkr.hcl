@@ -89,7 +89,7 @@ variable "DB_PASSWORD" {
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "ami_1021_1945"
+  ami_name        = "ami_a04-{{timestamp}}"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
 
@@ -105,7 +105,7 @@ source "amazon-ebs" "my-ami" {
 
   source_ami_filter {
    most_recent = true
-   owners = var.dev_user
+   owners = [var.dev_user]
 }
 
   // subnet_id       = var.subnet_id
