@@ -92,6 +92,7 @@ source "amazon-ebs" "my-ami" {
   ami_name        = "ami_a04-{{timestamp}}"
   ami_description = "AMI for A04"
   ami_regions     = ["us-east-1"]
+  ami_users = [var.demo_user]
 
   instance_type   = "t2.micro"
   source_ami      = var.source_ami
@@ -101,12 +102,12 @@ source "amazon-ebs" "my-ami" {
   access_key = var.aws_access_key
   secret_key = var.aws_secret_access_key
 
-  ami_users = [var.dev_user, var.demo_user]
+  // ami_users = [var.dev_user, var.demo_user]
 
-  source_ami_filter {
-   most_recent = true
-   owners = [var.dev_user]
-}
+//   source_ami_filter {
+//    most_recent = true
+//    owners = [var.dev_user]
+// }
 
   // subnet_id       = var.subnet_id
 
