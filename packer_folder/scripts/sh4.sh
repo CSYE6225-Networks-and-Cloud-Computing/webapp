@@ -33,7 +33,7 @@ cd /opt/csye6225 || exit 1
 # In your build script
 sudo npm install 
 echo "------- installing dotenv-------"
-npm install dotenv
+sudo npm install dotenv
 # sudo Node app.js
 echo "-------COMPLETE-------"
 # node app.js
