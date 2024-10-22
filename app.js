@@ -50,7 +50,7 @@ sequelize.sync({ alter: true }) // bootsrapping database - this updates the tabl
 .then(() => {
   console.log("Database & tables synced!");
 
-  const PORT = process.env.APP_PORT;
+  const PORT = process.env.APP_PORT || 3000;
   app.listen(PORT, () => {
     console.log('Server up and running on port', PORT);
   });
