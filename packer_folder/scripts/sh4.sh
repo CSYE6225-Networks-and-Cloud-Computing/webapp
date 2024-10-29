@@ -33,8 +33,11 @@ cd /opt/csye6225 || exit 1
 # npm install 
 # In your build script
 sudo npm install 
+
 echo "------- installing dotenv-------"
 sudo npm install dotenv
-# sudo Node app.js
+
+echo "------- installing aws-sdk, multer, winston, and statsd-client -------"
+sudo npm install aws-sdk multer winston statsd-client
+
 echo "-------COMPLETE-------"
-# node app.js

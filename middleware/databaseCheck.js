@@ -25,25 +25,38 @@ const checkDatabaseConnection = async (req, res, next) => {
 };
 
 // Middleware specifically for /healthz route to return 200 or 503
+// const healthCheck = async (req, res, sequelizeInstance) => {
+//     try {
+//         // Use the passed sequelize instance
+//         await sequelizeInstance.authenticate();
+        
+//         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+//         res.setHeader('Pragma', 'no-cache');
+//         res.setHeader('X-Content-Type-Options', 'nosniff');
+//         return res.status(200).send();
+//     } catch (error) {
+//         console.error("Database health check failed:", error);
+
+//         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+//         res.setHeader('Pragma', 'no-cache');
+//         res.setHeader('X-Content-Type-Options', 'nosniff');
+//         return res.status(503).send();
+//     }
+// };
 const healthCheck = async (req, res) => {
     try {
-        // Try to authenticate with the database
-        await sequelize.authenticate();
-        
-        // Return 200 OK if the database is available
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('X-Content-Type-Options', 'nosniff');
-        return res.status(200).send();
+      await sequelize.authenticate();
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.status(200).send();
     } catch (error) {
-        console.error("Database health check failed:", error);
-
-        // Return 503 Service Unavailable if the database is down
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('X-Content-Type-Options', 'nosniff');
-        return res.status(503).send();
+      console.error("Database health check failed:", error);
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.status(503).send();
     }
-};
+  };
 
 module.exports = { checkDatabaseConnection, healthCheck };
