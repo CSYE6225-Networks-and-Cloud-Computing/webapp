@@ -16,8 +16,22 @@ sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get install -y unzip
 
+
+# Install CloudWatch agent
+echo "-------Installing CloudWatch agent-------"
+sudo apt-get install -y amazon-cloudwatch-agent
+
+sudo apt-get install -y ca-certificates curl
+curl https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+
 sudo apt-get clean
 
 echo "-------Creating the csye6225 group and user-------"
 sudo groupadd csye6225 || echo "Group csye6225 already exists"
 sudo useradd -s /sbin/nologin -M -g csye6225 csye6225 || echo "User csye6225 already exists"
+
+# Start CloudWatch agent
+echo "-------Starting CloudWatch agent-------"
+sudo systemctl enable amazon-cloudwatch-agent
+sudo systemctl start amazon-cloudwatch-agent
