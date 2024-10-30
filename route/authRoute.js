@@ -22,7 +22,7 @@ router.route('/self')
   .put(basicAuth, updateUser);
 
 router.route('/self/pic')
-  .delete((req, res) => res.status(405).send())  // DELETE not allowed
+  // .delete((req, res) => res.status(405).send())  // DELETE not allowed
   .patch((req, res) => res.status(405).send())   // PATCH not allowed
   .head((req, res) => res.status(405).send())    // HEAD not allowed
   .options((req, res) => res.status(405).send()) // OPTIONS not allowed
