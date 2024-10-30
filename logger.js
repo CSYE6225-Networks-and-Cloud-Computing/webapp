@@ -1,7 +1,8 @@
 // logger.js
 const winston = require('winston');
 const WinstonCloudWatch = require('winston-cloudwatch');
-const StatsD = require('statsd-client');
+// const StatsD = require('statsd-client');
+const StatsD = require('hot-shots');
 
 const logger = winston.createLogger({
   level: 'info',
@@ -18,7 +19,10 @@ const logger = winston.createLogger({
 
 const sdc = new StatsD({
   port: 8125,
-  prefix: 'webapp.'
+  prefix: 'webapp.',
+  errorHandler: (error) => {
+    logger.error('StatsD Error:', error);
+  }
 });
 
 module.exports = { logger, sdc };
