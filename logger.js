@@ -17,7 +17,6 @@ const logger = winston.createLogger({
 });
 
 const sdc = new StatsD({
-  host: 'localhost',
   port: 8125,
   prefix: 'webapp.'
 });
