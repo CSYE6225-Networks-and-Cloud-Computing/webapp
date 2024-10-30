@@ -10,7 +10,7 @@ const logger = winston.createLogger({
     new winston.transports.File({ filename: '/var/log/webapp.log' }),
     new WinstonCloudWatch({
       logGroupName: '/csye6225/webapp',
-      logStreamName: 'application',
+      logStreamName: 'webappLogStream',
       awsRegion: process.env.AWS_REGION || 'us-east-1'
     })
   ]
@@ -18,7 +18,7 @@ const logger = winston.createLogger({
 
 const sdc = new StatsD({
   host: process.env.DB_HOST || 'localhost',
-  port: process.env.APP_PORT || 3000,
+  port: 8125,
   prefix: 'webapp.'
 });
 
