@@ -40,4 +40,7 @@ sudo npm install dotenv
 echo "------- installing aws-sdk, multer, winston, and statsd-client -------"
 sudo npm install aws-sdk multer winston statsd-client
 
+echo "------- installing SendGrid -------"
+sudo npm install @sendgrid/mail
+
 echo "-------COMPLETE-------"

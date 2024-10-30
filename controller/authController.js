@@ -2,6 +2,7 @@ const { user, Image } = require("../db/models/index");
 const bcrypt = require('bcrypt');
 const { Sequelize } = require('sequelize');
 const { logger, sdc } = require('../logger');
+const { sendEmail } = require('../services/emailService');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
@@ -148,6 +149,14 @@ const signup = async (req, res) => {
       sdc.increment('auth.signup.success');
       sdc.timing('auth.signup.time', Date.now() - startTime);
       const result = newUser.toJSON();
+      if (newUser) {
+        await sendEmail(
+          newUser.email,
+          'Welcome to Our App',
+          'Thanks for signing up!',
+          '<h1>Welcome to Our App</h1><p>We\'re glad you\'re here!</p>'
+        );
+      }
       return res.status(201).json({
         id: result.id,
         firstName: result.firstName,
@@ -156,6 +165,7 @@ const signup = async (req, res) => {
         account_created: result.account_created,
         account_updated: result.account_updated,
       });
+
   
     } catch (error) {
       logger.error('Error creating user:', error);
@@ -261,6 +271,68 @@ const loadDetails = (req, res) => {
 
 
 // --- Upload Profile Picture Function (Authenticated) ---
+// const uploadProfilePicture = async (req, res) => {
+//     const startTime = Date.now();
+//     sdc.increment('auth.uploadProfilePicture.attempts');
+
+//     if (!req.file) {
+//         logger.warn('Profile picture upload failed: No file provided');
+//         sdc.increment('auth.uploadProfilePicture.noFile');
+//         sdc.timing('auth.uploadProfilePicture.time', Date.now() - startTime);
+//         return res.status(400).json({ message: 'No file uploaded' });
+//     }
+
+//     const file = req.file;
+//     const fileExtension = file.originalname.split('.').pop().toLowerCase();
+//     const allowedExtensions = ['png', 'jpg', 'jpeg'];
+
+//     if (!allowedExtensions.includes(fileExtension)) {
+//         logger.warn(`Profile picture upload failed: Invalid file type - ${fileExtension}`);
+//         sdc.increment('auth.uploadProfilePicture.invalidFileType');
+//         sdc.timing('auth.uploadProfilePicture.time', Date.now() - startTime);
+//         return res.status(400).json({ message: 'Invalid file type. Only png, jpg, and jpeg are allowed.' });
+//     }
+
+//     try {
+//         const fileName = `${Date.now()}-${file.originalname}`;
+//         const s3Key = `${req.user.id}/${fileName}`;
+
+//         const s3Params = {
+//             Bucket: process.env.S3_BUCKET_NAME,
+//             Key: s3Key,
+//             Body: file.buffer,
+//             ContentType: file.mimetype
+//         };
+
+//         const s3UploadStartTime = Date.now();
+//         const uploadResult = await s3.upload(s3Params).promise();
+//         sdc.timing('s3.upload.profilePicture', Date.now() - s3UploadStartTime);
+
+//         const dbCreateStartTime = Date.now();
+//         const image = await Image.create({
+//             file_name: fileName,
+//             url: `${process.env.S3_BUCKET_NAME}/${s3Key}`,
+//             user_id: req.user.id
+//         });
+//         sdc.timing('database.query.createProfilePicture', Date.now() - dbCreateStartTime);
+
+//         logger.info(`Profile picture uploaded for user: ${req.user.id}`);
+//         sdc.increment('auth.uploadProfilePicture.success');
+//         sdc.timing('auth.uploadProfilePicture.time', Date.now() - startTime);
+//         res.status(201).json({
+//             file_name: image.file_name,
+//             id: image.id,
+//             url: image.url,
+//             upload_date: image.upload_date,
+//             user_id: image.user_id
+//         });
+//     } catch (error) {
+//         logger.error('Error uploading profile picture:', error);
+//         sdc.increment('auth.uploadProfilePicture.error');
+//         sdc.timing('auth.uploadProfilePicture.time', Date.now() - startTime);
+//         res.status(500).json({ message: 'Error uploading profile picture' });
+//     }
+// };
 const uploadProfilePicture = async (req, res) => {
     const startTime = Date.now();
     sdc.increment('auth.uploadProfilePicture.attempts');
@@ -284,6 +356,15 @@ const uploadProfilePicture = async (req, res) => {
     }
 
     try {
+        // Check if user already has a profile picture
+        const existingImage = await Image.findOne({ where: { user_id: req.user.id } });
+        if (existingImage) {
+            logger.warn(`Profile picture upload failed: User ${req.user.id} already has a profile picture`);
+            sdc.increment('auth.uploadProfilePicture.alreadyExists');
+            sdc.timing('auth.uploadProfilePicture.time', Date.now() - startTime);
+            return res.status(400).json({ message: 'A profile picture already exists. Please delete the existing picture before uploading a new one.' });
+        }
+
         const fileName = `${Date.now()}-${file.originalname}`;
         const s3Key = `${req.user.id}/${fileName}`;
 
