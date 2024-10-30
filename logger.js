@@ -1,8 +1,8 @@
 // logger.js
 const winston = require('winston');
 const WinstonCloudWatch = require('winston-cloudwatch');
-// const StatsD = require('statsd-client');
-const StatsD = require('hot-shots');
+const StatsD = require('statsd-client');
+// const StatsD = require('hot-shots');
 
 const logger = winston.createLogger({
   level: 'info',
