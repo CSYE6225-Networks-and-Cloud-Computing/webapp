@@ -31,6 +31,7 @@ echo "Unzipped contents:"
 ls -al
 
 echo "=============Setting Read and Excetute permissions for the directory============="
+sudo chown -R csye6225:csye6225 /opt/csye6225/
 sudo chmod 755 /opt/csye6225
 
 #move zip file to /tmp/webapp-fork
