@@ -45,6 +45,7 @@ cat <<EOF | sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agen
     "metrics_collection_interval": 10,
     "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
     "run_as_user": "root"
+    "flush_interval": 1 
   },
   "logs": {
     "logs_collected": {
