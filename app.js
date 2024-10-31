@@ -12,14 +12,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// Middleware for logging and metrics
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    sdc.increment(`api.${req.method}.${req.path}`);
-    sdc.timing(`api.${req.method}.${req.path}.time`, duration);
-    logger.info(`${req.method} ${req.path} completed in ${duration}ms`);
+    const path = req.route ? req.route.path : req.path;
+    sdc.increment(`api.${req.method}.${path}.calls`);
+    sdc.timing(`api.${req.method}.${path}.time`, duration);
+    logger.info(`${req.method} ${path} completed in ${duration}ms`);
   });
   next();
 });
