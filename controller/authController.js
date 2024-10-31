@@ -411,6 +411,14 @@ const deleteProfilePicture = async (req, res) => {
     const startTime = Date.now();
     sdc.increment('api.deleteProfilePicture.calls');
 
+    // Check for any form data or request body
+    if (Object.keys(req.body).length > 0 || req.headers['content-length'] > 0) {
+        logger.warn('Delete profile picture attempt with unexpected body content');
+        sdc.increment('api.deleteProfilePicture.unexpectedContent');
+        sdc.timing('api.deleteProfilePicture.time', Date.now() - startTime);
+        return res.status(400).json({ message: 'Request should not contain any body' });
+    }
+
     try {
         if (!req.user) {
             logger.warn('Unauthorized attempt to delete profile picture');
@@ -462,6 +470,14 @@ const deleteProfilePicture = async (req, res) => {
 const getProfilePicture = async (req, res) => {
     const startTime = Date.now();
     sdc.increment('auth.getProfilePicture.attempts');
+
+    // Check for any form data or request body
+    if (Object.keys(req.body).length > 0 || req.headers['content-length'] > 0) {
+        logger.warn('Get profile picture attempt with unexpected body content');
+        sdc.increment('auth.getProfilePicture.unexpectedContent');
+        sdc.timing('auth.getProfilePicture.time', Date.now() - startTime);
+        return res.status(400).json({ message: 'Request should not contain any body' });
+    }
   
     try {
       const dbQueryStartTime = Date.now();
