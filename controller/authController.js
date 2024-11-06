@@ -150,12 +150,12 @@ const signup = async (req, res) => {
       sdc.timing('auth.signup.time', Date.now() - startTime);
       const result = newUser.toJSON();
       if (newUser) {
-        await sendEmail(
-          newUser.email,
-          'Welcome to Our App',
-          'Thanks for signing up!',
-          '<h1>Welcome to Our App</h1><p>We\'re glad you\'re here!</p>'
-        );
+        // await sendEmail(
+        //   newUser.email,
+        //   'Welcome to Our App',
+        //   'Thanks for signing up!',
+        //   '<h1>Welcome to Our App</h1><p>We\'re glad you\'re here!</p>'
+        // );
       }
       return res.status(201).json({
         id: result.id,
