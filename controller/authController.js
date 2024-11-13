@@ -1,10 +1,13 @@
-const { user, Image } = require("../db/models/index");
+const { user, Image, emailVerification } = require("../db/models/index");
 const bcrypt = require('bcrypt');
 const { Sequelize } = require('sequelize');
 const { logger, sdc } = require('../logger');
 const { sendEmail } = require('../services/emailService');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
+const sns = new AWS.SNS();
+const crypto = require('crypto');
+
 
 
 // --- Basic Authentication ---
@@ -141,10 +144,39 @@ const signup = async (req, res) => {
         firstName,
         lastName,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        //[A08] code addition 
+        isVerified: false
       });
       sdc.timing('database.query.createUser', Date.now() - createUserStartTime);
+
+      //[A08] code addition
+      // Generate verification token
+      const verificationToken = crypto.randomBytes(20).toString('hex');
+      const expiresAt = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes from now
+
+      //[A08] code addition
+      // Store verification details
+      await emailVerification.create({
+        userId: newUser.id,
+        verificationToken,
+        expiresAt
+      });
+
+      //[A08] code addition 
+      // Publish message to SNS topic
+    const snsParams = {
+      Message: JSON.stringify({
+        user_id: newUser.id,
+        user_email: newUser.email,
+        verification_token: verificationToken
+      }),
+      TopicArn: process.env.SNS_TOPIC_ARN
+      // TopicArn: 'arn:aws:sns:us-east-1:123456789012:emailVerification'
+    };
+    await sns.publish(snsParams).promise();
   
+
       logger.info(`New user created: ${email}`);
       sdc.increment('auth.signup.success');
       sdc.timing('auth.signup.time', Date.now() - startTime);
@@ -248,6 +280,46 @@ const updateUser = async (req, res) => {
         error: error.message,
       });
     }
+  };
+
+
+// [A08] code addition
+// --- Verify Email Function ---
+const verifyEmail = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    const verification = await emailVerification.findOne({
+      where: {
+        verificationToken: token,
+        expiresAt: { [Sequelize.Op.gt]: new Date() } 
+      }
+    });
+
+    if (!verification) {
+      return res.status(400).json({ message: 'Your token has expired.' });
+    }
+
+    // Marking user as verified
+    await user.update({ isVerified: true }, { where: { id: verification.userId } });
+
+    // Deleting the verification entry
+    await verification.destroy();
+
+    return res.status(200).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Error during verification:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// [A08] code addition
+// --- Check if user is Verified Function ---
+const checkVerified = async (req, res, next) => {
+    if (!req.user.isVerified) {
+      return res.status(403).json({ message: 'Email not verified' });
+    }
+    next();
   };
 
 
@@ -510,5 +582,5 @@ const getProfilePicture = async (req, res) => {
   };
   
 
-module.exports = { signup, loadDetails, basicAuth, updateUser, uploadProfilePicture, deleteProfilePicture, getProfilePicture };
+module.exports = { signup, loadDetails, basicAuth, verifyEmail, checkVerified, updateUser, uploadProfilePicture, deleteProfilePicture, getProfilePicture };
 

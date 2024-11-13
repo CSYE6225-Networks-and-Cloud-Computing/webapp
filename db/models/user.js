@@ -28,6 +28,11 @@ module.exports = (sequelize) => {
       allowNull: false,
       unique: true,
     },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     account_created: {
       allowNull: false,
       type: DataTypes.DATE,
