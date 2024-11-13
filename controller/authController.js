@@ -6,6 +6,8 @@ const { sendEmail } = require('../services/emailService');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 const sns = new AWS.SNS();
+const crypto = require('crypto');
+
 
 
 // --- Basic Authentication ---
@@ -170,6 +172,7 @@ const signup = async (req, res) => {
         verification_token: verificationToken
       }),
       TopicArn: process.env.SNS_TOPIC_ARN
+      // TopicArn: 'arn:aws:sns:us-east-1:123456789012:emailVerification'
     };
     await sns.publish(snsParams).promise();
   
