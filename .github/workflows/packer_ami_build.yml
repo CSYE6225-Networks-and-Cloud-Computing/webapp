@@ -141,12 +141,7 @@ jobs:
 
       - name: Run Packer
         id: build_ami
-        run: |
-          curl -fsSL https://releases.hashicorp.com/packer/1.7.3/packer_1.7.3_linux_amd64.zip -o packer.zip
-          unzip packer.zip
-          sudo mv packer /usr/local/bin/
-          ls
-          pwd
+        run: |          
           cd packer_folder
           packer init packertemp.pkr.hcl      
           packer build packertemp.pkr.hcl
