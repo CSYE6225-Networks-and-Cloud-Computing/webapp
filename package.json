@@ -2,7 +2,7 @@
   "name": "webapp_t01",
   "version": "1.0.0",
   "description": "This repository contains a cloud-native web application that includes a `/healthz` endpoint for monitoring the health of the application and its connection to a PostgreSQL (or MySQL) database. It also contains a web application for users.",
-  "type": "commonjs",
+ 
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon app.js",
