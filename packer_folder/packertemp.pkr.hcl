@@ -179,5 +179,13 @@ provisioner "file" {
   provisioner "shell" {
     script = "scripts/sh5.sh"
   }
+
+  post-processor "manifest" {
+        output = "manifest.json"
+        strip_path = true
+        custom_data = {
+          my_custom_data = "example"
+        }
+    }
   
 }

@@ -97,6 +97,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ami_id: ${{ steps.build_ami.outputs.ami }}
+    env:
+      aws-access-key-id: ${{ secrets.ACCESS_KEY}}
+      aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{secrets.AWS_REGION}}
+      aws-dev-access-key-id: ${{ secrets.DEV_ACCESS_KEY}}
+      aws-dev-secret-access-key: ${{ secrets.DEV_SECRET_ACCESS_KEY }}
+      aws-demo-access-key-id: ${{ secrets.DEMO_ACCESS_KEY}}
+      aws-demo-secret-access-key: ${{ secrets.DEMO_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
