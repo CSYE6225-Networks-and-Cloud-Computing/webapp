@@ -91,7 +91,7 @@ source "amazon-ebs" "my-ami" {
   region          = var.aws_region
   ami_name        = "ami_a08-{{timestamp}}"
   ami_description = "AMI for A08"
-  # ami_regions     = ["us-east-1"]
+  ami_regions     = ["us-east-1"]
   ami_users = [var.demo_user]
 
   instance_type   = "t2.micro"
