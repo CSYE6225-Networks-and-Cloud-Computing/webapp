@@ -18,7 +18,7 @@ jobs:
       aws-demo-access-key-id: ${{ secrets.DEMO_ACCESS_KEY }}
       aws-demo-secret-access-key: ${{ secrets.DEMO_SECRET_KEY }}
       AWS_ENV: ${{ secrets.AWS_ENV }}
-      ami_id: ami-0e43405435d9d6d61
+      ami_id: ami-0e43405435d9d6d61 # This is a placeholder value
 
     steps:
       - name: Debug AMI ID
