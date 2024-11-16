@@ -89,7 +89,7 @@ jobs:
         with:
           node-version: '21.x'
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --exit
 
   packer_build:
     name: Packer Build
