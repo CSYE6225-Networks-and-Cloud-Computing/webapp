@@ -65,9 +65,9 @@
 #           cd packer_folder
 #           packer init packertemp.pkr.hcl
 
-#           packer build -var "aws_access_key=${{ secrets.ACCESS_KEY }}" \
-#              -var "aws_secret_access_key=${{ secrets.SECRET_ACCESS_KEY }}" \
-#              packertemp.pkr.hcl
+          # packer build -var "aws_access_key=${{ secrets.ACCESS_KEY }}" \
+          #    -var "aws_secret_access_key=${{ secrets.SECRET_ACCESS_KEY }}" \
+          #    packertemp.pkr.hcl
 
 
 name: CI/CD Pipeline
@@ -149,7 +149,9 @@ jobs:
           pwd
           cd packer_folder
           packer init packertemp.pkr.hcl      
-          packer build packertemp.pkr.hcl -var-file="variables.pkvars.hcl"
+          packer build -var "aws_access_key=${{ secrets.ACCESS_KEY }}" \
+             -var "aws_secret_access_key=${{ secrets.SECRET_ACCESS_KEY }}" \
+             packertemp.pkr.hcl
           AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
           echo "ami=$AMI_ID" >> "$GITHUB_OUTPUT"
 
