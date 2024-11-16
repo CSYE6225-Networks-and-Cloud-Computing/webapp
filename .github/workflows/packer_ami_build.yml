@@ -134,14 +134,19 @@ jobs:
           sudo mv /home/runner/work/webapp/webapp/webapp.zip /home/runner/work/webapp/webapp/packer_folder/
 
 
-      - name: Setup Packer
-        uses: hashicorp/setup-packer@main
-        with:
-          version: "1.8.3"
+      # - name: Setup Packer
+      #   uses: hashicorp/setup-packer@main
+      #   with:
+      #     version: "1.8.3"
 
       - name: Run Packer
         id: build_ami
-        run: |          
+        run: |                    
+          curl -fsSL https://releases.hashicorp.com/packer/1.7.3/packer_1.7.3_linux_amd64.zip -o packer.zip
+          unzip packer.zip
+          sudo mv packer /usr/local/bin/
+          ls
+          pwd
           cd packer_folder
           packer init packertemp.pkr.hcl      
           packer build packertemp.pkr.hcl
