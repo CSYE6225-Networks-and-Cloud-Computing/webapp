@@ -107,8 +107,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.AWS_ENV)] }}
-          aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.AWS_ENV)] }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
 
