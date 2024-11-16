@@ -2,7 +2,7 @@
   "name": "webapp_t01",
   "version": "1.0.0",
   "description": "This repository contains a cloud-native web application that includes a `/healthz` endpoint for monitoring the health of the application and its connection to a PostgreSQL (or MySQL) database. It also contains a web application for users.",
- 
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon app.js",
@@ -15,6 +15,7 @@
     "@sendgrid/mail": "^8.1.4",
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
+    "chai": "4.3",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "i": "^0.3.7",
@@ -27,7 +28,6 @@
     "winston-cloudwatch": "^6.3.0"
   },
   "devDependencies": {
-    "chai": "^5.1.2",
     "chai-http": "^5.1.1",
     "mocha": "^10.8.2",
     "nodemon": "^3.1.7",
