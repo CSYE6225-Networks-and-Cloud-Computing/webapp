@@ -5,7 +5,7 @@ const { sequelize } = require('./db/models/index');
 const { checkDatabaseConnection, healthCheck } = require('./middleware/databaseCheck');
 const setHeaders = require('./middleware/setHeaders');
 const { logger, sdc } = require('./logger');
-const AWS = require('aws-sdk');
+// const AWS = require('aws-sdk');
 
 const app = express();
 app.use(express.json());
