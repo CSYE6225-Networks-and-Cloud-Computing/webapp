@@ -105,6 +105,7 @@ jobs:
       aws-dev-secret-access-key: ${{ secrets.DEV_SECRET_ACCESS_KEY }}
       aws-demo-access-key-id: ${{ secrets.DEMO_ACCESS_KEY}}
       aws-demo-secret-access-key: ${{ secrets.DEMO_SECRET_ACCESS_KEY }}
+      AWS_ENV: ${{ secrets.AWS_ENV }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -117,7 +118,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
 
       - name: Upload Zip File
@@ -158,24 +159,23 @@ jobs:
   deploy:
     name: Deploy
     needs: packer_build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest   
     steps:
       - name: Configure AWS Credentials
-        if: ${{ vars.AWS_ENV == 'dev' }}
+        if: env.AWS_ENV == 'dev'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.DEV_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.DEV_SECRET_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Configure AWS Credentials
-        if: ${{ vars.AWS_ENV == 'demo' }}
+        if: env.AWS_ENV == 'demo'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.DEMO_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.DEMO_SECRET_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Update Launch Template
         run: |
