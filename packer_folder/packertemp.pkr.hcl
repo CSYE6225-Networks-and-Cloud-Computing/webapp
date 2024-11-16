@@ -99,8 +99,8 @@ source "amazon-ebs" "my-ami" {
   ssh_interface   = "public_ip"  # Ensures SSH via public IP
   ssh_username    = var.ssh_username
 
-  # access_key = var.aws_access_key
-  # secret_key = var.aws_secret_access_key
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_access_key
 
   // ami_users = [var.dev_user, var.demo_user]
 
