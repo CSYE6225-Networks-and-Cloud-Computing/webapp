@@ -1,4 +1,76 @@
-name: Packer Build CI
+# name: Packer Build CI
+
+# on:
+#   # push:
+#   #   branches: ["main"]
+#   pull_request:
+#     branches: ["main"]
+
+# jobs:
+#   build:
+#     name: packer-build
+#     runs-on: ubuntu-latest
+
+#     # env:
+#     #   DB_HOST: ${{ secrets.DB_HOST }}
+#     #   DB_PORT: ${{ secrets.DB_PORT }}
+#     #   DB_USERNAME: ${{ secrets.DB_USERNAME }}
+#     #   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#     #   DB_NAME: ${{ secrets.DB_NAME }}
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # - name: Create .env file
+#       #   run: |
+#       #     echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+#       #     echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+#       #     echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+#       #     echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+#       #     echo "APP_PORT=${{ secrets.APP_PORT }}" >> .env
+#       #     echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+#       #     echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+
+#       - name: Create Zip File
+#         run: |
+#           zip -r webapp.zip .
+        
+#       - name: List Files
+#         run: ls -al
+
+#       - name: Upload Zip File
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: webapp zip creation
+#           path: webapp.zip
+          
+          
+#       - name: Move Zip file to Packer Folder 
+#         run: |
+#           ls
+#           pwd
+#           sudo mv /home/runner/work/webapp/webapp/webapp.zip /home/runner/work/webapp/webapp/packer_folder/
+
+
+
+#       - name: Run Packer
+#         run: |
+#           # Install Packer
+#           curl -fsSL https://releases.hashicorp.com/packer/1.7.3/packer_1.7.3_linux_amd64.zip -o packer.zip
+#           unzip packer.zip
+#           sudo mv packer /usr/local/bin/
+#           ls
+#           pwd
+#           cd packer_folder
+#           packer init packertemp.pkr.hcl
+
+#           packer build -var "aws_access_key=${{ secrets.ACCESS_KEY }}" \
+#              -var "aws_secret_access_key=${{ secrets.SECRET_ACCESS_KEY }}" \
+#              packertemp.pkr.hcl
+
+
+name: CI/CD Pipeline
 
 on:
   # push:
@@ -7,37 +79,38 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
-    name: packer-build
+  test:
+    name: Test
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: npm ci
+      - run: npm test
 
-    # env:
-    #   DB_HOST: ${{ secrets.DB_HOST }}
-    #   DB_PORT: ${{ secrets.DB_PORT }}
-    #   DB_USERNAME: ${{ secrets.DB_USERNAME }}
-    #   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-    #   DB_NAME: ${{ secrets.DB_NAME }}
-
+  packer_build:
+    name: Packer Build
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      ami_id: ${{ steps.build_ami.outputs.ami }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # - name: Create .env file
-      #   run: |
-      #     echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-      #     echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-      #     echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-      #     echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-      #     echo "APP_PORT=${{ secrets.APP_PORT }}" >> .env
-      #     echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-      #     echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-
       - name: Create Zip File
-        run: |
-          zip -r webapp.zip .
-        
-      - name: List Files
-        run: ls -al
+        run: zip -r webapp.zip .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.AWS_ENV)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.AWS_ENV)] }}
+          aws-region: us-east-1
+
 
       - name: Upload Zip File
         uses: actions/upload-artifact@v3
@@ -53,18 +126,63 @@ jobs:
           sudo mv /home/runner/work/webapp/webapp/webapp.zip /home/runner/work/webapp/webapp/packer_folder/
 
 
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "1.8.3"
 
       - name: Run Packer
+        id: build_ami
         run: |
-          # Install Packer
           curl -fsSL https://releases.hashicorp.com/packer/1.7.3/packer_1.7.3_linux_amd64.zip -o packer.zip
           unzip packer.zip
           sudo mv packer /usr/local/bin/
           ls
           pwd
           cd packer_folder
-          packer init packertemp.pkr.hcl
+          packer init packertemp.pkr.hcl      
+          packer build packertemp.pkr.hcl
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
+          echo "ami=$AMI_ID" >> "$GITHUB_OUTPUT"
 
-          packer build -var "aws_access_key=${{ secrets.ACCESS_KEY }}" \
-             -var "aws_secret_access_key=${{ secrets.SECRET_ACCESS_KEY }}" \
-             packertemp.pkr.hcl
+  deploy:
+    name: Deploy
+    needs: packer_build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.AWS_ENV)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.AWS_ENV)] }}
+          aws-region: us-east-1
+
+      - name: Update Launch Template
+        run: |
+          aws ec2 create-launch-template-version \
+            --launch-template-data '{"ImageId":"${{ needs.packer_build.outputs.ami_id }}"}' \
+            --source-version '$Latest' \
+            --launch-template-id ${{ secrets.LAUNCH_TEMPLATE_ID }}
+
+      - name: Start Instance Refresh
+        id: start_refresh
+        run: |
+          REFRESH_ID=$(aws autoscaling start-instance-refresh --auto-scaling-group-name ${{ secrets.ASG_NAME }} --query 'InstanceRefreshId' --output text)
+          echo "refresh_id=$REFRESH_ID" >> $GITHUB_OUTPUT
+
+      - name: Wait for Instance Refresh
+        run: |
+          while true; do
+            STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name ${{ secrets.ASG_NAME }} --instance-refresh-ids ${{ steps.start_refresh.outputs.refresh_id }} --query 'InstanceRefreshes[0].Status' --output text)
+            if [ "$STATUS" = "Successful" ]; then
+              echo "Instance refresh completed successfully"
+              exit 0
+            elif [ "$STATUS" = "Failed" ]; then
+              echo "Instance refresh failed"
+              exit 1
+            else
+              echo "Instance refresh in progress. Current status: $STATUS"
+              sleep 30
+            fi
+          done
