@@ -41,7 +41,7 @@ echo "------- installing aws-sdk, multer, winston, and statsd-client -------"
 sudo npm install aws-sdk multer winston statsd-client
 
 echo "------- installing SendGrid -------"
-sudo npm install @sendgrid/mail
+# sudo npm install @sendgrid/mail
 
 echo "------- installing aws-sdk client-s3 -------"
 # sudo npm install @aws-sdk/client-s3

@@ -89,8 +89,8 @@ variable "volume_size" {
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  ami_name        = "ami_a06-{{timestamp}}"
-  ami_description = "AMI for A04"
+  ami_name        = "ami_a08-{{timestamp}}"
+  ami_description = "AMI for A08"
   ami_regions     = ["us-east-1"]
   ami_users = [var.demo_user]
 
@@ -179,5 +179,13 @@ provisioner "file" {
   provisioner "shell" {
     script = "scripts/sh5.sh"
   }
+
+  post-processor "manifest" {
+        output = "manifest.json"
+        strip_path = true
+        custom_data = {
+          my_custom_data = "example"
+        }
+    }
   
 }
