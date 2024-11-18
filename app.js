@@ -25,7 +25,12 @@ app.use((req, res, next) => {
 });
 
 // Existing routes and middleware
-app.use('/v1/user', checkDatabaseConnection, authRouter);
+const apiVersion = 'v2';
+// app.use(`/${apiVersion}/user`, checkDatabaseConnection, authRouter);
+app.use(`/${apiVersion}/user`, checkDatabaseConnection, (req, res, next) => {
+  req.apiVersion = apiVersion;
+  next();
+}, authRouter);
 
 app.head('/healthz', setHeaders, (req, res) => {
   logger.info('HEAD request to /healthz');
@@ -65,6 +70,8 @@ app.head('/healthz', setHeaders, (req, res) => {
 // });
 
 app.get('/healthz', setHeaders, async (req, res) => {
+  console.log ("---------------apiVersion: ",apiVersion);
+  
   const startTime = Date.now();
   logger.info('GET request to /healthz');
   sdc.increment('api.GET.healthz');
@@ -88,6 +95,7 @@ app.get('/healthz', setHeaders, async (req, res) => {
 });
 
 app.all('/healthz', setHeaders, (req, res) => {
+  console.log ("---------------apiVersion: ",apiVersion);
   logger.info(`${req.method} request to /healthz`);
   sdc.increment(`api.${req.method}.healthz.methodNotAllowed`);
   return res.status(405).send();
@@ -111,5 +119,5 @@ sequelize.sync({ alter: true })
   .catch((error) => {
     logger.error("Error syncing database or starting server: ", error);
   });
-
-module.exports = { sequelize, app, logger, sdc };
+  console.log("In app.js, apiVersion is:", apiVersion);
+module.exports = { sequelize, app, logger, sdc};

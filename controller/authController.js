@@ -7,7 +7,8 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 const sns = new AWS.SNS();
 const crypto = require('crypto');
-
+// const { apiVersion } = require('../app');
+// const appExports = require('../app');
 
 
 // --- Basic Authentication ---
@@ -73,7 +74,8 @@ const basicAuth = async (req, res, next) => {
   };
 
 // --- Signup Function ---
-const signup = async (req, res) => {
+const signup = async (req, res, apiVersion) => {
+    console.log("--------------------------apiVersion: ", apiVersion);
     const startTime = Date.now();
     sdc.increment('auth.signup.attempts');
   
@@ -169,7 +171,8 @@ const signup = async (req, res) => {
       Message: JSON.stringify({
         user_id: newUser.id,
         user_email: newUser.email,
-        verification_token: verificationToken
+        verification_token: verificationToken,
+        apiVersion: apiVersion
       }),
       TopicArn: process.env.SNS_TOPIC_ARN
       // TopicArn: 'arn:aws:sns:us-east-1:123456789012:emailVerification'
@@ -195,7 +198,7 @@ const signup = async (req, res) => {
         lastName: result.lastName,
         email: result.email,
         account_created: result.account_created,
-        account_updated: result.account_updated,
+        account_updated: result.account_updated,        
       });
 
   

@@ -8,7 +8,8 @@ router.use(setHeaders);
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.route('/').post(signup);
+// router.route('/').post(signup);
+router.post('/', (req, res) => signup(req, res, req.apiVersion));
 router.route('/self/verify')
   .get(verifyEmail);
 
