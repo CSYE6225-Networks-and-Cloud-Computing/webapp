@@ -167,3 +167,5 @@ yarn.lock
 .ionide
 
 *.pkvars.hcl
+
+webapp_t01@1.0.0

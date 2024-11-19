@@ -299,17 +299,6 @@ const verifyEmail = async (req, res) => {
       }
     });
 
-    const user = await user.findOne({ 
-      where: { 
-        id: verification.userId 
-      } 
-    });
-
-    if (user.isVerified) {
-      logger.info(`Already verified user attempted verification: ${user.id}`);
-      return res.status(200).json({ message: 'Email already verified' });
-    }
-
     if (!verification) {
       logger.info(`Expired verification token attempted: ${token}`);
       return res.status(400).json({ message: 'Your token has expired.' });
