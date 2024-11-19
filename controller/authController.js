@@ -300,6 +300,7 @@ const verifyEmail = async (req, res) => {
     });
 
     if (!verification) {
+      logger.info(`Expired verification token attempted: ${token}`);
       return res.status(400).json({ message: 'Your token has expired.' });
     }
 
@@ -308,18 +309,21 @@ const verifyEmail = async (req, res) => {
 
     // Deleting the verification entry
     await verification.destroy();
-
+    logger.info(`User successfully verified: ${user.id}`);
     return res.status(200).json({ message: 'Email verified successfully' });
   } catch (error) {
     console.error('Error during verification:', error);
+    logger.error(`Error during email verification: ${error}`);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // [A08] code addition
 // --- Check if user is Verified Function ---
 const checkVerified = async (req, res, next) => {
     if (!req.user.isVerified) {
+      logger.warn(`User ${req.user.id} is not verified`);
       return res.status(403).json({ message: 'Email not verified' });
     }
     next();

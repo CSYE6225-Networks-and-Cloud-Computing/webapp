@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 });
 
 // Existing routes and middleware
-const apiVersion = 'v2';
+const apiVersion = 'v1';
 // app.use(`/${apiVersion}/user`, checkDatabaseConnection, authRouter);
 app.use(`/${apiVersion}/user`, checkDatabaseConnection, (req, res, next) => {
   req.apiVersion = apiVersion;
