@@ -101,6 +101,38 @@ app.all('/healthz', setHeaders, (req, res) => {
   return res.status(405).send();
 });
 
+// New /cicd endpoint
+app.get('/cicd', setHeaders, async (req, res) => {
+  const startTime = Date.now();
+  logger.info('GET request to /cicd');
+  sdc.increment('api.GET.cicd');
+
+  if (Object.keys(req.query).length > 0 || req._body || Object.keys(req.body).length > 0 || req.headers['authorization'] || req.get('Content-Length') !== undefined) {
+    logger.warn('Invalid request to /cicd');
+    sdc.increment('api.GET.cicd.badRequest');
+    return res.status(400).send();
+  }
+
+  try {
+    const duration = Date.now() - startTime;
+    sdc.timing('api.GET.cicd.time', duration);
+    logger.info(`CICD check completed in ${duration}ms`);
+    return res.status(200).send('CICD check successful');
+  } catch (error) {
+    const duration = Date.now() - startTime;
+    sdc.timing('api.GET.cicd.time', duration);
+    logger.error(`CICD check failed in ${duration}ms: ${error.message}`);
+    return res.status(500).send('CICD check failed');
+  }
+});
+
+// New catch-all for other methods on /cicd
+app.all('/cicd', setHeaders, (req, res) => {
+  logger.info(`${req.method} request to /cicd`);
+  sdc.increment(`api.${req.method}.cicd.methodNotAllowed`);
+  return res.status(405).send();
+});
+
 app.get('*', setHeaders, (req, res) => {
   logger.warn(`404 Not Found: ${req.method} ${req.path}`);
   sdc.increment('api.notFound');
