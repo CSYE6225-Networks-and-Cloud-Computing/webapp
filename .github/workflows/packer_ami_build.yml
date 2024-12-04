@@ -105,7 +105,7 @@ jobs:
       aws-dev-secret-access-key: ${{ secrets.DEV_SECRET_ACCESS_KEY }}
       aws-demo-access-key-id: ${{ secrets.DEMO_ACCESS_KEY}}
       aws-demo-secret-access-key: ${{ secrets.DEMO_SECRET_ACCESS_KEY }}
-      AWS_ENV: 'dev'
+      AWS_ENV: 'demo'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
